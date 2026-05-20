@@ -1,0 +1,2376 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMII — Growth Infrastructure for High-Value Businesses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..900;1,9..40,100..900&display=swap" rel="stylesheet">
+<!-- Calendly Widget -->
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+
+<style>
+  /* ─── THEME VARIABLES ─── */
+  :root[data-theme="dark"] {
+    --bg-primary: #0a0a0b;
+    --bg-secondary: #0f0f11;
+    --bg-card: #111114;
+    --bg-card-hover: #161619;
+    --border: rgba(255,255,255,0.06);
+    --border-hover: rgba(255,150,60,0.3);
+    --accent: #e8621a;
+    --accent-soft: #c4551a;
+    --accent-glow: rgba(232,98,26,0.15);
+    --accent-amber: #f09540;
+    --text-primary: #f0ede8;
+    --text-secondary: #8a8885;
+    --text-muted: #4a4845;
+    --grid-line: rgba(255,255,255,0.03);
+    --shadow-card: 0 20px 60px rgba(0,0,0,0.4);
+    --footer-bg: #080809;
+    --noise-opacity: 0.4;
+    --scrollbar-track: #0a0a0b;
+  }
+
+  :root[data-theme="light"] {
+    --bg-primary: #f8f6f3;
+    --bg-secondary: #f0ede8;
+    --bg-card: #ffffff;
+    --bg-card-hover: #faf9f7;
+    --border: rgba(0,0,0,0.08);
+    --border-hover: rgba(232,98,26,0.4);
+    --accent: #d45a14;
+    --accent-soft: #c4511a;
+    --accent-glow: rgba(232,98,26,0.12);
+    --accent-amber: #e0840a;
+    --text-primary: #0f0e0c;
+    --text-secondary: #5a5754;
+    --text-muted: #9a9895;
+    --grid-line: rgba(0,0,0,0.04);
+    --shadow-card: 0 4px 24px rgba(0,0,0,0.08);
+    --footer-bg: #e8e4de;
+    --noise-opacity: 0.15;
+    --scrollbar-track: #f8f6f3;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: default;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+
+  /* ─── NOISE TEXTURE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: var(--noise-opacity);
+  }
+
+  /* ─── GLOBAL GRID BG ─── */
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* ─── THEME TOGGLE ─── */
+  .theme-toggle {
+    width: 40px;
+    height: 22px;
+    border-radius: 11px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+  }
+
+  .theme-toggle::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    transition: transform 0.3s ease;
+    transform: translateX(0);
+  }
+
+  [data-theme="light"] .theme-toggle::after {
+    transform: translateX(18px);
+  }
+
+  .theme-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .theme-icon {
+    font-size: 13px;
+    opacity: 0.6;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 999;
+    padding: 18px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10,10,11,0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: all 0.3s ease;
+  }
+
+  [data-theme="light"] nav {
+    background: rgba(248,246,243,0.85);
+  }
+
+  nav.scrolled {
+    padding: 12px 48px;
+    background: rgba(10,10,11,0.92);
+  }
+
+  [data-theme="light"] nav.scrolled {
+    background: rgba(248,246,243,0.96);
+  }
+
+  .nav-logo {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: var(--text-primary);
+  }
+
+  .nav-logo span { color: var(--accent); }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text-primary); }
+
+  .nav-cta {
+    background: var(--accent);
+    color: #fff !important;
+    padding: 9px 18px;
+    border-radius: 6px;
+    font-weight: 600 !important;
+    transition: all 0.2s !important;
+    white-space: nowrap;
+  }
+
+  .nav-cta:hover {
+    background: var(--accent-amber) !important;
+    color: #000 !important;
+    transform: translateY(-1px);
+  }
+
+  /* ─── WHATSAPP FLOATING BUTTON ─── */
+  .whatsapp-float {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 998;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #25D366;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4), 0 2px 8px rgba(0,0,0,0.3);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    animation: waPulse 3s ease-in-out infinite;
+  }
+
+  .whatsapp-float:hover {
+    transform: scale(1.12) translateY(-3px);
+    box-shadow: 0 8px 32px rgba(37,211,102,0.5);
+  }
+
+  .whatsapp-float svg {
+    width: 30px;
+    height: 30px;
+    fill: #fff;
+  }
+
+  @keyframes waPulse {
+    0%, 100% { box-shadow: 0 4px 20px rgba(37,211,102,0.4), 0 0 0 0 rgba(37,211,102,0); }
+    50% { box-shadow: 0 4px 20px rgba(37,211,102,0.4), 0 0 0 8px rgba(37,211,102,0); }
+  }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    border-radius: 7px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-amber);
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(232,98,26,0.35);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(255,255,255,0.15);
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.04);
+    transform: translateY(-2px);
+  }
+
+  [data-theme="light"] .btn-secondary:hover {
+    border-color: rgba(0,0,0,0.15);
+    background: rgba(0,0,0,0.04);
+  }
+
+  .btn-whatsapp {
+    background: #25D366;
+    color: #fff;
+  }
+
+  .btn-whatsapp:hover {
+    background: #1da851;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(37,211,102,0.35);
+  }
+
+  /* ─── SECTION UTILITIES ─── */
+  section { position: relative; overflow: hidden; }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 20px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── MARKETING ICON VISUALS ─── */
+  .intel-visual {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid rgba(232,98,26,0.2);
+    border-radius: 4px;
+    background: rgba(232,98,26,0.05);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Mini analytics sparkline decoration */
+  .section-deco {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.06;
+  }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 80px;
+    background: var(--bg-primary);
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+
+  [data-theme="light"] .hero-grid-bg {
+    background-image:
+      linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+  }
+
+  .hero-ambient {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,98,26,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: ambientPulse 6s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .hero-ambient-2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,98,26,0.05) 0%, transparent 70%);
+    top: 20%; right: 10%;
+    animation: ambientPulse 8s ease-in-out infinite reverse;
+    pointer-events: none;
+  }
+
+  @keyframes ambientPulse {
+    0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    padding: 80px 0;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px 6px 6px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    margin-bottom: 36px;
+    background: rgba(255,255,255,0.02);
+  }
+
+  [data-theme="light"] .hero-badge { background: rgba(0,0,0,0.03); }
+
+  .hero-badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero-badge span {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+
+  .hero-headline {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: clamp(42px, 5vw, 66px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+    color: var(--text-primary);
+  }
+
+  .hero-headline .accent-text { color: var(--accent); position: relative; }
+
+  .hero-sub {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 44px;
+    max-width: 500px;
+  }
+
+  .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; }
+
+  .hero-stats {
+    display: flex;
+    gap: 40px;
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+
+  .hero-stat-num {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+  }
+
+  .hero-stat-num span { color: var(--accent); }
+
+  .hero-stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── HERO VISUAL (Dashboard) ─── */
+  .hero-visual { position: relative; height: 520px; }
+
+  .dashboard-frame {
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--bg-card);
+    overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  [data-theme="light"] .dashboard-frame {
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.06);
+  }
+
+  .dashboard-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.02);
+  }
+
+  .dash-dots { display: flex; gap: 6px; }
+  .dash-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dash-dot:nth-child(1) { background: #ff5f57; }
+  .dash-dot:nth-child(2) { background: #febc2e; }
+  .dash-dot:nth-child(3) { background: #28c840; }
+
+  .dash-title {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    margin-left: 8px;
+  }
+
+  .dashboard-body {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 12px;
+  }
+
+  .dash-metric-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: border-color 0.3s;
+  }
+
+  [data-theme="light"] .dash-metric-card { background: rgba(0,0,0,0.02); }
+
+  .dash-metric-card:hover { border-color: rgba(232,98,26,0.2); }
+
+  .dash-metric-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .dash-metric-val {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+  }
+
+  .dash-metric-val .up { color: #4ade80; font-size: 13px; font-weight: 500; }
+
+  .dash-sparkline { margin-top: 10px; height: 32px; position: relative; }
+  .dash-sparkline svg { width: 100%; height: 100%; }
+  .dash-wide { grid-column: 1 / -1; }
+
+  .activity-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 48px;
+  }
+
+  .activity-bar-item {
+    flex: 1;
+    border-radius: 3px 3px 0 0;
+    background: linear-gradient(180deg, var(--accent) 0%, rgba(232,98,26,0.3) 100%);
+    animation: barGrow 1.5s ease forwards;
+    transform-origin: bottom;
+  }
+
+  @keyframes barGrow {
+    from { transform: scaleY(0); opacity: 0; }
+    to { transform: scaleY(1); opacity: 1; }
+  }
+
+  .floating-tag {
+    position: absolute;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: rgba(15,15,17,0.9);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    animation: floatTag 4s ease-in-out infinite;
+    z-index: 3;
+  }
+
+  [data-theme="light"] .floating-tag { background: rgba(248,246,243,0.9); }
+
+  .floating-tag.tag-1 { top: -20px; right: 40px; animation-delay: 0s; }
+  .floating-tag.tag-2 { bottom: 60px; left: -30px; animation-delay: 1.5s; }
+  .floating-tag.tag-3 { bottom: -20px; right: 20px; animation-delay: 0.8s; }
+
+  .floating-tag .tag-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 6px;
+    animation: blink 2s infinite;
+  }
+
+  @keyframes floatTag {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+
+  /* ─── FUNNEL DECO SVG (marketing visual) ─── */
+  .funnel-deco {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.04;
+    pointer-events: none;
+  }
+
+  /* ─── TRUST BAR ─── */
+  #trust {
+    padding: 60px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-secondary);
+  }
+
+  .trust-inner { text-align: center; }
+
+  .trust-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .trust-headline {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: clamp(20px, 2.5vw, 28px);
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.4;
+    max-width: 680px;
+    margin: 0 auto 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .trust-sub {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 540px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .trust-badges {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .trust-badge {
+    padding: 8px 18px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.02);
+    letter-spacing: 0.04em;
+  }
+
+  [data-theme="light"] .trust-badge { background: rgba(0,0,0,0.03); }
+
+  /* ─── PROBLEM ─── */
+  #problem { padding: 140px 0; background: var(--bg-primary); }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .problem-headline {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: clamp(34px, 4vw, 54px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+
+  .problem-headline em { font-style: normal; color: var(--accent); }
+  .problem-sub {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--accent-amber);
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+
+  .problem-body { color: var(--text-secondary); font-size: 15px; line-height: 1.8; margin-bottom: 12px; }
+
+  .problem-visual { position: relative; height: 420px; }
+
+  .frag-node {
+    position: absolute;
+    padding: 12px 18px;
+    border-radius: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.04em;
+    transition: all 0.3s;
+  }
+
+  .frag-node:hover { border-color: var(--border-hover); color: var(--text-primary); }
+
+  .frag-node.active {
+    border-color: rgba(232,98,26,0.4);
+    background: rgba(232,98,26,0.05);
+    color: var(--accent-amber);
+    animation: nodePulse 3s ease-in-out infinite;
+  }
+
+  @keyframes nodePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232,98,26,0); }
+    50% { box-shadow: 0 0 20px rgba(232,98,26,0.2); }
+  }
+
+  .frag-node.n1 { top: 30px; left: 20px; }
+  .frag-node.n2 { top: 30px; right: 40px; }
+  .frag-node.n3 { top: 50%; left: 50%; transform: translate(-50%,-50%); }
+  .frag-node.n4 { bottom: 80px; left: 30px; }
+  .frag-node.n5 { bottom: 80px; right: 20px; }
+  .frag-node.n6 { top: 40%; left: 5%; }
+  .frag-node.n7 { top: 40%; right: 5%; }
+  .frag-svg { position: absolute; inset: 0; pointer-events: none; }
+
+  /* ─── SYSTEM ─── */
+  #system { padding: 140px 0; background: var(--bg-secondary); }
+
+  .system-header { text-align: center; margin-bottom: 80px; }
+
+  .system-headline {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: clamp(36px, 4.5vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .system-sub { font-size: 16px; color: var(--text-secondary); max-width: 480px; margin: 0 auto; }
+
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--border);
+  }
+
+  .pillar-card {
+    background: var(--bg-card);
+    padding: 32px 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pillar-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: left;
+  }
+
+  .pillar-card:hover::before, .pillar-card.active::before { transform: scaleX(1); }
+  .pillar-card:hover, .pillar-card.active { background: var(--bg-card-hover); }
+
+  .pillar-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: rgba(232,98,26,0.1);
+    border: 1px solid rgba(232,98,26,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 18px;
+    transition: all 0.3s;
+  }
+
+  .pillar-card:hover .pillar-icon, .pillar-card.active .pillar-icon {
+    background: rgba(232,98,26,0.2);
+    border-color: rgba(232,98,26,0.5);
+    box-shadow: 0 0 20px rgba(232,98,26,0.15);
+  }
+
+  .pillar-num { font-family: 'Inter Tight', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 10px; }
+  .pillar-title { font-family: 'Inter Tight', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; line-height: 1.3; letter-spacing: -0.01em; }
+  .pillar-items { list-style: none; }
+  .pillar-items li { font-size: 12px; color: var(--text-muted); padding: 4px 0; padding-left: 12px; position: relative; transition: color 0.2s; }
+  .pillar-items li::before { content: '—'; position: absolute; left: 0; color: var(--accent); font-size: 10px; }
+  .pillar-card:hover .pillar-items li, .pillar-card.active .pillar-items li { color: var(--text-secondary); }
+
+  /* ─── INDUSTRIES ─── */
+  #industries { padding: 140px 0; background: var(--bg-primary); }
+
+  .industries-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; }
+
+  .industries-headline {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    max-width: 400px;
+  }
+
+  .industries-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  .industry-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 36px 28px;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .industry-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    background: radial-gradient(circle at 50% 0%, rgba(232,98,26,0.08) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.35s;
+  }
+
+  .industry-card:hover { border-color: rgba(232,98,26,0.3); transform: translateY(-6px); box-shadow: var(--shadow-card), 0 0 30px rgba(232,98,26,0.08); }
+  .industry-card:hover::after { opacity: 1; }
+
+  .industry-icon { font-size: 32px; margin-bottom: 24px; display: block; }
+  .industry-name { font-family: 'Inter Tight', sans-serif; font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; letter-spacing: -0.02em; }
+  .industry-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; }
+  .industry-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .industry-tag { font-size: 10px; font-weight: 600; color: var(--accent); background: rgba(232,98,26,0.08); border: 1px solid rgba(232,98,26,0.15); padding: 4px 10px; border-radius: 100px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .industry-arrow {
+    position: absolute;
+    top: 28px; right: 28px;
+    width: 32px; height: 32px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+
+  .industry-card:hover .industry-arrow { background: var(--accent); border-color: var(--accent); color: #fff; transform: rotate(45deg); }
+
+  /* ─── AI VISIBILITY ─── */
+  #ai-visibility { padding: 140px 0; background: var(--bg-secondary); position: relative; }
+
+  .ai-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+
+  .ai-headline { font-family: 'Inter Tight', sans-serif; font-size: clamp(38px, 4.5vw, 58px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 24px; }
+  .ai-headline em { font-style: normal; color: var(--accent); }
+  .ai-body { font-size: 15px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px; }
+
+  .discovery-list { list-style: none; margin: 28px 0; }
+  .discovery-list li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+  .discovery-list li:last-child { border-bottom: none; }
+  .discovery-list li::before { content: ''; width: 24px; height: 24px; border-radius: 6px; background: rgba(232,98,26,0.1); border: 1px solid rgba(232,98,26,0.2); flex-shrink: 0; }
+
+  .ai-visual { position: relative; height: 460px; display: flex; align-items: center; justify-content: center; }
+
+  .ai-orbit { position: relative; width: 340px; height: 340px; }
+
+  .orbit-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,98,26,0.4), rgba(232,98,26,0.05));
+    border: 1px solid rgba(232,98,26,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    animation: orbCenter 4s ease-in-out infinite;
+    box-shadow: 0 0 40px rgba(232,98,26,0.15);
+  }
+
+  @keyframes orbCenter {
+    0%, 100% { box-shadow: 0 0 30px rgba(232,98,26,0.1); }
+    50% { box-shadow: 0 0 60px rgba(232,98,26,0.25); }
+  }
+
+  .orbit-ring { position: absolute; border-radius: 50%; border: 1px solid rgba(255,255,255,0.06); top: 50%; left: 50%; transform: translate(-50%, -50%); }
+  [data-theme="light"] .orbit-ring { border-color: rgba(0,0,0,0.08); }
+  .orbit-ring-1 { width: 160px; height: 160px; }
+  .orbit-ring-2 { width: 260px; height: 260px; animation: rotateRing 20s linear infinite; }
+  .orbit-ring-3 { width: 340px; height: 340px; animation: rotateRing 30s linear infinite reverse; }
+
+  @keyframes rotateRing {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .orbit-node {
+    position: absolute;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.3s;
+    cursor: default;
+  }
+
+  .orbit-node:hover { border-color: rgba(232,98,26,0.4); background: rgba(232,98,26,0.1); box-shadow: 0 0 20px rgba(232,98,26,0.2); }
+
+  .orbit-node .orbit-label { position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 600; color: var(--text-muted); white-space: nowrap; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* ─── PHILOSOPHY ─── */
+  #philosophy { padding: 140px 0; background: var(--bg-primary); }
+
+  .phil-inner { max-width: 760px; margin: 0 auto; text-align: center; }
+
+  .phil-headline { font-family: 'Inter Tight', sans-serif; font-size: clamp(38px, 5vw, 64px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; margin-bottom: 40px; }
+  .phil-headline .ghost { color: var(--text-muted); }
+  .phil-quote { font-family: 'Inter Tight', sans-serif; font-size: 20px; font-weight: 500; color: var(--accent-amber); font-style: italic; margin-bottom: 48px; letter-spacing: -0.01em; }
+
+  .phil-pillars { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--border); margin-top: 60px; text-align: left; }
+  .phil-item { background: var(--bg-card); padding: 24px 20px; transition: background 0.2s; }
+  .phil-item:hover { background: var(--bg-card-hover); }
+  .phil-item-num { font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: 0.15em; margin-bottom: 10px; }
+  .phil-item-text { font-size: 13px; font-weight: 600; color: var(--text-secondary); line-height: 1.5; }
+
+  /* ─── EXECUTION ─── */
+  #execution { padding: 140px 0; background: var(--bg-secondary); }
+
+  .exec-header { text-align: center; margin-bottom: 80px; }
+  .exec-headline { font-family: 'Inter Tight', sans-serif; font-size: clamp(34px, 4vw, 52px); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px; }
+  .exec-sub { color: var(--text-secondary); font-size: 16px; max-width: 440px; margin: 0 auto; }
+
+  .exec-timeline { position: relative; max-width: 900px; margin: 0 auto; }
+  .exec-timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, transparent, var(--accent) 20%, var(--accent) 80%, transparent); transform: translateX(-50%); opacity: 0.4; }
+
+  .exec-step { display: grid; grid-template-columns: 1fr 60px 1fr; gap: 0; margin-bottom: 48px; align-items: center; }
+  .exec-step:nth-child(even) .exec-step-content { order: 3; text-align: left; }
+  .exec-step:nth-child(even) .exec-step-empty { order: 1; }
+  .exec-step:nth-child(even) .exec-step-dot { order: 2; }
+
+  .exec-step-content { padding: 24px 28px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; text-align: right; transition: border-color 0.3s; }
+  .exec-step-content:hover { border-color: rgba(232,98,26,0.25); }
+  .exec-step-title { font-family: 'Inter Tight', sans-serif; font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; letter-spacing: -0.01em; }
+  .exec-step-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .exec-step-dot { display: flex; justify-content: center; }
+
+  .exec-dot-inner {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 2px solid var(--accent);
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes dotPulse {
+    0%, 100% { box-shadow: 0 0 0 1px var(--accent), 0 0 0 0 rgba(232,98,26,0); }
+    50% { box-shadow: 0 0 0 1px var(--accent), 0 0 0 6px rgba(232,98,26,0); }
+  }
+
+  /* ─── RESULTS ─── */
+  #results { padding: 140px 0; background: var(--bg-primary); }
+
+  .results-header { text-align: center; margin-bottom: 80px; }
+  .results-headline { font-family: 'Inter Tight', sans-serif; font-size: clamp(34px, 4vw, 52px); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px; }
+
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+
+  .metric-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 36px 28px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .metric-card:hover { border-color: rgba(232,98,26,0.2); transform: translateY(-4px); }
+  .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0; transition: opacity 0.3s; }
+  .metric-card:hover::before { opacity: 1; }
+  .metric-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 16px; }
+  .metric-value { font-family: 'Inter Tight', sans-serif; font-size: 48px; font-weight: 800; letter-spacing: -0.04em; color: var(--text-primary); margin-bottom: 8px; line-height: 1; }
+  .metric-value .metric-unit { font-size: 28px; color: var(--accent); }
+  .metric-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .metrics-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+  /* ─── BOOKING SECTION ─── */
+  #booking {
+    padding: 120px 0;
+    background: var(--bg-secondary);
+    position: relative;
+  }
+
+  .booking-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .booking-headline {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .booking-headline em { font-style: normal; color: var(--accent); }
+
+  .booking-sub {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 36px;
+  }
+
+  .booking-features { list-style: none; margin-bottom: 40px; }
+  .booking-features li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+  .booking-features li:last-child { border-bottom: none; }
+  .booking-features li::before { content: '✓'; width: 20px; height: 20px; border-radius: 50%; background: rgba(232,98,26,0.1); border: 1px solid rgba(232,98,26,0.3); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--accent); flex-shrink: 0; }
+
+  .booking-contact-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .contact-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.25s;
+    color: var(--text-primary);
+  }
+
+  .contact-card:hover {
+    border-color: var(--border-hover);
+    transform: translateX(4px);
+    box-shadow: 0 4px 20px rgba(232,98,26,0.08);
+  }
+
+  .contact-card-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .contact-card-icon.wa { background: rgba(37,211,102,0.1); border: 1px solid rgba(37,211,102,0.2); }
+  .contact-card-icon.mail { background: rgba(232,98,26,0.1); border: 1px solid rgba(232,98,26,0.2); }
+
+  .contact-card-text { font-size: 14px; font-weight: 600; }
+  .contact-card-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .calendly-embed-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 700px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .calendly-inline-widget {
+    min-width: 100% !important;
+    height: 700px;
+  }
+
+  /* ─── FINAL CTA ─── */
+  #cta {
+    padding: 160px 0;
+    background: var(--bg-secondary);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #cta::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(232,98,26,0.08) 0%, transparent 65%); pointer-events: none; }
+
+  .cta-grid-bg { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+  [data-theme="light"] .cta-grid-bg { background-image: linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px); }
+
+  .cta-inner { position: relative; z-index: 2; text-align: center; max-width: 700px; margin: 0 auto; }
+  .cta-headline { font-family: 'Inter Tight', sans-serif; font-size: clamp(38px, 5vw, 66px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; margin-bottom: 24px; }
+  .cta-headline em { font-style: normal; color: var(--accent); }
+  .cta-sub { font-size: 17px; color: var(--text-secondary); margin-bottom: 48px; line-height: 1.7; }
+  .cta-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+  .cta-email-line {
+    margin-top: 32px;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .cta-email-line a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .cta-email-line a:hover { color: var(--accent-amber); }
+
+  /* ─── BLOG SECTION ─── */
+  #blog { padding: 140px 0; background: var(--bg-primary); }
+
+  .blog-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; }
+
+  .blog-headline {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    max-width: 400px;
+  }
+
+  .blog-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 20px; }
+
+  .blog-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    position: relative;
+    text-decoration: none;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .blog-card:hover {
+    border-color: rgba(232,98,26,0.25);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-card), 0 0 40px rgba(232,98,26,0.06);
+  }
+
+  .blog-card-visual {
+    height: 200px;
+    background: var(--bg-secondary);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .blog-card-featured .blog-card-visual { height: 260px; }
+
+  .blog-card-visual svg { opacity: 0.6; }
+
+  .blog-card-cat {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    background: rgba(232,98,26,0.12);
+    border: 1px solid rgba(232,98,26,0.2);
+    padding: 4px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+  }
+
+  .blog-card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+
+  .blog-card-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .blog-card-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  .blog-card-featured .blog-card-title { font-size: 22px; }
+
+  .blog-card-excerpt {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    flex: 1;
+  }
+
+  .blog-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .blog-card-read {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+  }
+
+  .blog-card-arrow {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: all 0.3s;
+  }
+
+  .blog-card:hover .blog-card-arrow {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    transform: rotate(45deg);
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    padding: 60px 0 40px;
+    border-top: 1px solid var(--border);
+    background: var(--footer-bg);
+  }
+
+  .footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; margin-bottom: 60px; }
+
+  .footer-logo { font-family: 'Inter Tight', sans-serif; font-size: 24px; font-weight: 800; letter-spacing: 0.08em; margin-bottom: 12px; }
+  .footer-logo span { color: var(--accent); }
+  .footer-tagline { font-size: 12px; color: var(--text-muted); line-height: 1.6; max-width: 220px; letter-spacing: 0.03em; margin-bottom: 20px; }
+
+  .footer-social {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .footer-social-link {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 15px;
+    transition: all 0.25s;
+  }
+
+  [data-theme="light"] .footer-social-link { background: rgba(0,0,0,0.04); }
+
+  .footer-social-link:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+    background: rgba(232,98,26,0.08);
+    transform: translateY(-2px);
+  }
+
+  .footer-col-title { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 20px; }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .footer-links a { font-size: 14px; color: var(--text-secondary); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text-primary); }
+
+  .footer-bottom {
+    padding-top: 30px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-copy { font-size: 12px; color: var(--text-muted); }
+
+  .footer-global {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .footer-global-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+  ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* ─── CURSOR GLOW ─── */
+  .cursor-glow {
+    position: fixed;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,98,26,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 999;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s;
+  }
+
+  [data-theme="light"] .cursor-glow { opacity: 0; }
+
+  /* ─── MOBILE NAV TOGGLE ─── */
+  .nav-mobile-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 18px;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 60px; }
+    .hero-visual { height: 360px; }
+    .pillars-grid { grid-template-columns: repeat(3, 1fr); }
+    .industries-grid { grid-template-columns: repeat(2, 1fr); }
+    .ai-inner { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .phil-pillars { grid-template-columns: repeat(3, 1fr); }
+    .booking-inner { grid-template-columns: 1fr; }
+    .blog-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .nav-mobile-toggle { display: flex; }
+    .container { padding: 0 24px; }
+    .problem-grid { grid-template-columns: 1fr; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    .industries-grid { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: 1fr; }
+    .metrics-row { grid-template-columns: 1fr; }
+    .exec-timeline::before { display: none; }
+    .exec-step { grid-template-columns: 1fr; }
+    .exec-step-empty, .exec-step-dot { display: none; }
+    .exec-step-content { text-align: left; }
+    .exec-step:nth-child(even) .exec-step-content { order: 0; }
+    .phil-pillars { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+    .industries-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .blog-grid { grid-template-columns: 1fr; }
+    .blog-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .booking-inner { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- WhatsApp Float -->
+<a href="https://wa.me/917208699536" class="whatsapp-float" target="_blank" rel="noopener" title="Chat on WhatsApp">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- ─── NAV ─── -->
+<nav id="mainNav">
+  <div class="nav-logo">DM<span>II</span></div>
+  <ul class="nav-links">
+    <li><a href="#system">System</a></li>
+    <li><a href="#industries">Industries</a></li>
+    <li><a href="#blog">Intelligence</a></li>
+    <li><a href="#ai-visibility">AI Visibility</a></li>
+    <li><a href="#booking">Book a Call</a></li>
+    <li><a href="#cta" class="nav-cta">Strategic Discussion</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="theme-toggle-wrap" title="Toggle light/dark mode">
+      <span class="theme-icon">🌙</span>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
+      <span class="theme-icon">☀️</span>
+    </div>
+    <button class="nav-mobile-toggle" id="mobileMenuBtn">☰</button>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-ambient"></div>
+  <div class="hero-ambient-2"></div>
+
+  <!-- Decorative funnel SVG -->
+  <svg class="section-deco funnel-deco" width="200" height="400" viewBox="0 0 200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 20 L190 20 L140 100 L60 100 Z" stroke="#e8621a" stroke-width="1.5" fill="none"/>
+    <path d="M60 110 L140 110 L120 190 L80 190 Z" stroke="#e8621a" stroke-width="1.5" fill="none"/>
+    <path d="M80 200 L120 200 L110 280 L90 280 Z" stroke="#e8621a" stroke-width="1.5" fill="none"/>
+    <line x1="100" y1="280" x2="100" y2="340" stroke="#e8621a" stroke-width="1.5"/>
+    <circle cx="100" cy="350" r="12" stroke="#e8621a" stroke-width="1.5"/>
+  </svg>
+
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-content fade-in">
+        <div class="hero-badge">
+          <div class="hero-badge-dot"></div>
+          <span>Growth Intelligence Operating System</span>
+        </div>
+
+        <h1 class="hero-headline">
+          Growth<br>
+          <span class="accent-text">Infrastructure</span><br>
+          for High-Value<br>Businesses.
+        </h1>
+
+        <p class="hero-sub">
+          Demand generation, authority systems, AI visibility and conversion infrastructure — integrated into one scalable growth engine for ambitious businesses worldwide.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="#booking" class="btn btn-primary">Schedule Strategy Call →</a>
+          <a href="https://wa.me/917208699536" class="btn btn-whatsapp" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp Us
+          </a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">5<span>×</span></div>
+            <div class="hero-stat-label">Growth Pillars Integrated</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">4</div>
+            <div class="hero-stat-label">Target Industries</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">🌐</div>
+            <div class="hero-stat-label">Global Reach</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Visual -->
+      <div class="hero-visual fade-in" style="transition-delay: 0.2s;">
+        <div class="floating-tag tag-1"><span class="tag-dot"></span>Demand Active</div>
+        <div class="floating-tag tag-2"><span class="tag-dot"></span>AI Indexed</div>
+        <div class="floating-tag tag-3"><span class="tag-dot"></span>Retention Live</div>
+
+        <div class="dashboard-frame">
+          <div class="dashboard-header">
+            <div class="dash-dots">
+              <div class="dash-dot"></div>
+              <div class="dash-dot"></div>
+              <div class="dash-dot"></div>
+            </div>
+            <div class="dash-title">DMII Growth Command Center — Live</div>
+          </div>
+          <div class="dashboard-body">
+            <div class="dash-metric-card">
+              <div class="dash-metric-label">Qualified Demand</div>
+              <div class="dash-metric-val">+347% <span class="up">↑</span></div>
+              <div class="dash-sparkline">
+                <svg viewBox="0 0 100 32" preserveAspectRatio="none">
+                  <polyline points="0,28 15,22 30,24 45,16 55,18 70,8 80,10 100,4" fill="none" stroke="#e8621a" stroke-width="1.5" opacity="0.8"/>
+                  <polyline points="0,28 15,22 30,24 45,16 55,18 70,8 80,10 100,4 100,32 0,32" fill="url(#sparkGrad)" opacity="0.15"/>
+                  <defs>
+                    <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#e8621a"/>
+                      <stop offset="100%" stop-color="transparent"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+
+            <div class="dash-metric-card">
+              <div class="dash-metric-label">Conversion Rate</div>
+              <div class="dash-metric-val">8.4% <span class="up">↑</span></div>
+              <div class="dash-sparkline">
+                <svg viewBox="0 0 100 32" preserveAspectRatio="none">
+                  <polyline points="0,24 20,20 35,22 50,14 65,10 80,8 90,6 100,4" fill="none" stroke="#f09540" stroke-width="1.5" opacity="0.8"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="dash-metric-card dash-wide">
+              <div class="dash-metric-label">Demand Flow — 30 days</div>
+              <div class="activity-bar" id="actBar"></div>
+            </div>
+
+            <div class="dash-metric-card">
+              <div class="dash-metric-label">AI Visibility Score</div>
+              <div class="dash-metric-val" style="color: var(--accent);">94<span style="font-size:18px;">/100</span></div>
+            </div>
+
+            <div class="dash-metric-card">
+              <div class="dash-metric-label">Retention Index</div>
+              <div class="dash-metric-val">76% <span class="up">↑</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TRUST BAR ─── -->
+<section id="trust">
+  <div class="container">
+    <div class="trust-inner fade-in">
+      <div class="trust-eyebrow">The Competitive Shift</div>
+      <h2 class="trust-headline">
+        Modern businesses no longer compete only on products.<br>They compete on visibility, positioning, trust and execution speed.
+      </h2>
+      <p class="trust-sub">
+        DMII operates as the growth intelligence layer embedded inside ambitious businesses — everywhere in the world.
+      </p>
+      <div class="trust-badges">
+        <div class="trust-badge">Global Operations</div>
+        <div class="trust-badge">Full-Funnel Architecture</div>
+        <div class="trust-badge">AI-Native Approach</div>
+        <div class="trust-badge">Enterprise-Grade Execution</div>
+        <div class="trust-badge">International Time Zones</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROBLEM ─── -->
+<section id="problem">
+  <div class="grid-bg"></div>
+  <!-- Data nodes deco -->
+  <svg class="section-deco" style="right:5%;top:10%;width:120px;height:120px;" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="60" cy="60" r="8" stroke="#e8621a" stroke-width="1.5"/>
+    <circle cx="20" cy="30" r="5" stroke="#e8621a" stroke-width="1"/>
+    <circle cx="100" cy="30" r="5" stroke="#e8621a" stroke-width="1"/>
+    <circle cx="20" cy="90" r="5" stroke="#e8621a" stroke-width="1"/>
+    <circle cx="100" cy="90" r="5" stroke="#e8621a" stroke-width="1"/>
+    <line x1="60" y1="60" x2="20" y2="30" stroke="#e8621a" stroke-width="0.8" stroke-dasharray="3 3"/>
+    <line x1="60" y1="60" x2="100" y2="30" stroke="#e8621a" stroke-width="0.8" stroke-dasharray="3 3"/>
+    <line x1="60" y1="60" x2="20" y2="90" stroke="#e8621a" stroke-width="0.8" stroke-dasharray="3 3"/>
+    <line x1="60" y1="60" x2="100" y2="90" stroke="#e8621a" stroke-width="0.8" stroke-dasharray="3 3"/>
+  </svg>
+  <div class="container">
+    <div class="problem-grid">
+      <div class="fade-in">
+        <div class="section-label">The Core Problem</div>
+        <h2 class="problem-headline">Most Businesses Don't Have a <em>Marketing</em> Problem.</h2>
+        <p class="problem-sub">They have a fragmented growth problem.</p>
+        <p class="problem-body">Attention is generated in one place. Conversion happens somewhere else. Retention is ignored completely.</p>
+        <p class="problem-body">Growth slows when execution lacks intelligence. Campaigns without systems create noise, not compounding returns.</p>
+        <p class="problem-body" style="color: var(--text-primary); font-weight: 500; margin-top: 20px;">DMII connects these fragments into a single, intelligent growth infrastructure.</p>
+      </div>
+
+      <div class="problem-visual fade-in" style="transition-delay: 0.15s;">
+        <svg class="frag-svg" id="fragSvg"></svg>
+        <div class="frag-node n1" id="fn1">Paid Media</div>
+        <div class="frag-node n2" id="fn2">Content</div>
+        <div class="frag-node n3 active" id="fn3">DMII Growth OS</div>
+        <div class="frag-node n4" id="fn4">SEO / GEO</div>
+        <div class="frag-node n5" id="fn5">CRM</div>
+        <div class="frag-node n6" id="fn6">Funnel</div>
+        <div class="frag-node n7" id="fn7">Retention</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SYSTEM ─── -->
+<section id="system">
+  <div class="grid-bg"></div>
+  <div class="container">
+    <div class="system-header fade-in">
+      <div class="section-label">The DMII Growth System</div>
+      <h2 class="system-headline">A Unified Growth<br>Operating System</h2>
+      <p class="system-sub">Five integrated pillars engineered to compound value over time.</p>
+    </div>
+
+    <div class="pillars-grid fade-in">
+      <div class="pillar-card active">
+        <div class="pillar-num">01</div>
+        <div class="pillar-icon">⚡</div>
+        <div class="pillar-title">Demand Infrastructure</div>
+        <ul class="pillar-items">
+          <li>Paid Media</li>
+          <li>Lead Generation</li>
+          <li>Funnel Systems</li>
+          <li>Audience Intelligence</li>
+        </ul>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-num">02</div>
+        <div class="pillar-icon">🏛</div>
+        <div class="pillar-title">Authority Architecture</div>
+        <ul class="pillar-items">
+          <li>Content Ecosystems</li>
+          <li>Social Positioning</li>
+          <li>Thought Leadership</li>
+          <li>Brand Authority</li>
+        </ul>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-num">03</div>
+        <div class="pillar-icon">🤖</div>
+        <div class="pillar-title">AI Visibility</div>
+        <ul class="pillar-items">
+          <li>ChatGPT Discoverability</li>
+          <li>AI Search</li>
+          <li>GEO & SEO</li>
+          <li>Conversational Discovery</li>
+        </ul>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-num">04</div>
+        <div class="pillar-icon">🎯</div>
+        <div class="pillar-title">Conversion Systems</div>
+        <ul class="pillar-items">
+          <li>CRO Infrastructure</li>
+          <li>CRM Integration</li>
+          <li>Automation</li>
+          <li>Pipeline Velocity</li>
+        </ul>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-num">05</div>
+        <div class="pillar-icon">♾️</div>
+        <div class="pillar-title">Retention Systems</div>
+        <ul class="pillar-items">
+          <li>Lifecycle Marketing</li>
+          <li>Loyalty Infrastructure</li>
+          <li>LTV Optimization</li>
+          <li>Churn Reduction</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── INDUSTRIES ─── -->
+<section id="industries">
+  <div class="grid-bg"></div>
+  <!-- Growth graph deco -->
+  <svg class="section-deco" style="left:3%;bottom:10%;width:160px;height:100px;" viewBox="0 0 160 100" fill="none">
+    <polyline points="0,90 30,70 60,75 90,40 120,45 160,10" stroke="#e8621a" stroke-width="1.5" fill="none"/>
+    <polyline points="0,90 30,70 60,75 90,40 120,45 160,10 160,100 0,100" fill="#e8621a" opacity="0.2"/>
+  </svg>
+  <div class="container">
+    <div class="industries-header">
+      <div>
+        <div class="section-label">Sector Intelligence</div>
+        <h2 class="industries-headline">Built For<br>Specific Markets.</h2>
+      </div>
+      <p style="color: var(--text-secondary); font-size: 15px; max-width: 280px; text-align: right; line-height: 1.7;">Growth infrastructure calibrated to the specific demands and dynamics of each sector.</p>
+    </div>
+
+    <div class="industries-grid">
+      <div class="industry-card fade-in">
+        <div class="industry-arrow">↗</div>
+        <span class="industry-icon">🏥</span>
+        <div class="industry-name">Healthcare Practices</div>
+        <div class="industry-desc">Patient acquisition, practice authority and retention systems built around trust and discovery in regulated environments.</div>
+        <div class="industry-tags">
+          <span class="industry-tag">Patient Acq.</span>
+          <span class="industry-tag">Reputation</span>
+          <span class="industry-tag">Retention</span>
+        </div>
+      </div>
+      <div class="industry-card fade-in" style="transition-delay: 0.1s;">
+        <div class="industry-arrow">↗</div>
+        <span class="industry-icon">⚖️</span>
+        <div class="industry-name">Legal Firms</div>
+        <div class="industry-desc">Case acquisition infrastructure, trust authority and high-intent demand generation for competitive legal markets.</div>
+        <div class="industry-tags">
+          <span class="industry-tag">Trust Authority</span>
+          <span class="industry-tag">Demand Gen</span>
+          <span class="industry-tag">AI Visibility</span>
+        </div>
+      </div>
+      <div class="industry-card fade-in" style="transition-delay: 0.2s;">
+        <div class="industry-arrow">↗</div>
+        <span class="industry-icon">🏢</span>
+        <div class="industry-name">Professional Services</div>
+        <div class="industry-desc">Lead generation, local authority systems and conversion infrastructure for competitive service businesses.</div>
+        <div class="industry-tags">
+          <span class="industry-tag">Lead Gen</span>
+          <span class="industry-tag">Authority</span>
+          <span class="industry-tag">SEO</span>
+        </div>
+      </div>
+      <div class="industry-card fade-in" style="transition-delay: 0.3s;">
+        <div class="industry-arrow">↗</div>
+        <span class="industry-icon">📦</span>
+        <div class="industry-name">D2C Brands</div>
+        <div class="industry-desc">Full-funnel growth from customer acquisition to retention infrastructure, LTV maximization and omnichannel visibility.</div>
+        <div class="industry-tags">
+          <span class="industry-tag">Full Funnel</span>
+          <span class="industry-tag">LTV</span>
+          <span class="industry-tag">Omnichannel</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── AI VISIBILITY ─── -->
+<section id="ai-visibility">
+  <div class="grid-bg"></div>
+  <div class="container">
+    <div class="ai-inner">
+      <div class="fade-in">
+        <div class="section-label">AI Visibility Layer</div>
+        <h2 class="ai-headline">Search Has<br><em>Changed.</em></h2>
+        <p class="ai-body">Customers no longer discover businesses only through Google. The discovery surface has fragmented across multiple intelligence layers.</p>
+        <p class="ai-body">Visibility is no longer SEO alone. It's <strong style="color: var(--text-primary);">intelligence architecture.</strong></p>
+
+        <ul class="discovery-list">
+          <li>AI Assistants — ChatGPT, Gemini, Perplexity, Claude</li>
+          <li>Conversational search interfaces</li>
+          <li>Recommendation and discovery systems</li>
+          <li>Short-form discovery ecosystems</li>
+          <li>GEO — Generative Engine Optimization</li>
+        </ul>
+
+        <a href="#booking" class="btn btn-primary" style="margin-top: 32px;">Build AI Visibility →</a>
+      </div>
+
+      <div class="ai-visual fade-in" style="transition-delay: 0.15s;">
+        <div class="ai-orbit">
+          <div class="orbit-ring orbit-ring-1"></div>
+          <div class="orbit-ring orbit-ring-2"></div>
+          <div class="orbit-ring orbit-ring-3"></div>
+          <div class="orbit-center">DMII</div>
+          <div class="orbit-node on1" style="top:-18px;left:calc(50% - 18px);">🤖<div class="orbit-label">AI</div></div>
+          <div class="orbit-node on2" style="top:calc(50% - 18px);right:-18px;">🔍<div class="orbit-label">Search</div></div>
+          <div class="orbit-node on3" style="bottom:-18px;left:calc(50% - 18px);">📱<div class="orbit-label">Social</div></div>
+          <div class="orbit-node on4" style="top:calc(50% - 18px);left:-18px;">💬<div class="orbit-label">Conv.</div></div>
+          <div class="orbit-node" style="position:absolute;top:10px;left:calc(50% - 18px + 75px);">🎯<div class="orbit-label">GEO</div></div>
+          <div class="orbit-node" style="position:absolute;top:10px;left:calc(50% - 18px - 75px);">⭐<div class="orbit-label">Trust</div></div>
+          <div class="orbit-node" style="position:absolute;bottom:10px;left:calc(50% - 18px + 75px);">📊<div class="orbit-label">Data</div></div>
+          <div class="orbit-node" style="position:absolute;bottom:10px;left:calc(50% - 18px - 75px);">🌐<div class="orbit-label">Global</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PHILOSOPHY ─── -->
+<section id="philosophy">
+  <div class="container">
+    <div class="phil-inner fade-in">
+      <div class="section-label" style="justify-content: center;">Operating Philosophy</div>
+      <h2 class="phil-headline">Built Like<br><span class="ghost">Internal</span><br>Operators.</h2>
+      <p class="phil-quote">"We think beyond campaigns."</p>
+      <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.8; max-width: 560px; margin: 0 auto;">
+        We study consumer behavior, market positioning, acquisition psychology, conversion friction and retention behavior. Because sustainable growth is engineered systemically — not assembled campaign by campaign.
+      </p>
+
+      <div class="phil-pillars">
+        <div class="phil-item">
+          <div class="phil-item-num">01</div>
+          <div class="phil-item-text">Consumer Behavior Analysis</div>
+        </div>
+        <div class="phil-item">
+          <div class="phil-item-num">02</div>
+          <div class="phil-item-text">Market Positioning Intelligence</div>
+        </div>
+        <div class="phil-item">
+          <div class="phil-item-num">03</div>
+          <div class="phil-item-text">Acquisition Psychology</div>
+        </div>
+        <div class="phil-item">
+          <div class="phil-item-num">04</div>
+          <div class="phil-item-text">Conversion Friction Mapping</div>
+        </div>
+        <div class="phil-item">
+          <div class="phil-item-num">05</div>
+          <div class="phil-item-text">Retention Behavior Systems</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── EXECUTION ─── -->
+<section id="execution">
+  <div class="container">
+    <div class="exec-header fade-in">
+      <div class="section-label" style="justify-content: center;">Execution Model</div>
+      <h2 class="exec-headline">Embedded Into Growth.</h2>
+      <p class="exec-sub">DMII integrates into the full business growth cycle — not just one layer of it.</p>
+    </div>
+
+    <div class="exec-timeline fade-in">
+      <div class="exec-step">
+        <div class="exec-step-content">
+          <div class="exec-step-title">01 · Acquisition Architecture</div>
+          <div class="exec-step-desc">Paid media, organic demand and authority positioning — building reliable inbound flow from multiple channels.</div>
+        </div>
+        <div class="exec-step-dot"><div class="exec-dot-inner"></div></div>
+        <div class="exec-step-empty"></div>
+      </div>
+      <div class="exec-step">
+        <div class="exec-step-empty"></div>
+        <div class="exec-step-dot"><div class="exec-dot-inner"></div></div>
+        <div class="exec-step-content" style="text-align:left;">
+          <div class="exec-step-title">02 · Positioning & Authority</div>
+          <div class="exec-step-desc">Building market presence, thought leadership and trust infrastructure that compounds over time.</div>
+        </div>
+      </div>
+      <div class="exec-step">
+        <div class="exec-step-content">
+          <div class="exec-step-title">03 · Conversion Infrastructure</div>
+          <div class="exec-step-desc">CRO, CRM and automation systems that convert qualified demand into revenue with fewer friction points.</div>
+        </div>
+        <div class="exec-step-dot"><div class="exec-dot-inner"></div></div>
+        <div class="exec-step-empty"></div>
+      </div>
+      <div class="exec-step">
+        <div class="exec-step-empty"></div>
+        <div class="exec-step-dot"><div class="exec-dot-inner"></div></div>
+        <div class="exec-step-content" style="text-align:left;">
+          <div class="exec-step-title">04 · AI Discoverability</div>
+          <div class="exec-step-desc">GEO, AI search indexing and conversational discovery — visibility across every modern search surface.</div>
+        </div>
+      </div>
+      <div class="exec-step">
+        <div class="exec-step-content">
+          <div class="exec-step-title">05 · Retention Systems</div>
+          <div class="exec-step-desc">Lifecycle marketing, loyalty infrastructure and LTV optimization — turning customers into compounding assets.</div>
+        </div>
+        <div class="exec-step-dot"><div class="exec-dot-inner"></div></div>
+        <div class="exec-step-empty"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── RESULTS ─── -->
+<section id="results">
+  <div class="grid-bg"></div>
+  <div class="container">
+    <div class="results-header fade-in">
+      <div class="section-label" style="justify-content: center;">Growth Outcomes</div>
+      <h2 class="results-headline">Growth Is Measured<br>Operationally.</h2>
+    </div>
+
+    <div class="metrics-grid fade-in">
+      <div class="metric-card">
+        <div class="metric-label">Qualified Demand</div>
+        <div class="metric-value"><span class="metric-unit">↑</span> 3x</div>
+        <div class="metric-desc">Increase in high-intent leads from integrated demand infrastructure vs isolated campaigns.</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Acquisition Efficiency</div>
+        <div class="metric-value"><span class="metric-unit">↓</span> 40<span class="metric-unit" style="font-size:24px;">%</span></div>
+        <div class="metric-desc">Reduction in cost-per-acquisition through funnel optimization and conversion infrastructure.</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Retention Rate</div>
+        <div class="metric-value">76<span class="metric-unit" style="font-size:28px;">%</span></div>
+        <div class="metric-desc">Average client retention when lifecycle marketing and loyalty systems are deployed end-to-end.</div>
+      </div>
+    </div>
+
+    <div class="metrics-row fade-in" style="margin-top: 16px;">
+      <div class="metric-card" style="display:flex; align-items:center; gap: 28px; padding: 28px;">
+        <div>
+          <div class="metric-label">AI Visibility Coverage</div>
+          <div class="metric-value" style="font-size: 36px;"><span class="metric-unit">↑</span> 94%</div>
+        </div>
+        <div style="flex:1; height: 2px; background: linear-gradient(90deg, var(--accent) 94%, var(--border) 94%); border-radius: 2px;"></div>
+        <div class="metric-desc" style="max-width: 200px;">Across AI search, GEO and conversational discovery surfaces.</div>
+      </div>
+      <div class="metric-card" style="display:flex; align-items:center; gap: 28px; padding: 28px;">
+        <div>
+          <div class="metric-label">Positioning Strength</div>
+          <div class="metric-value" style="font-size: 36px;"><span class="metric-unit">↑</span> 5x</div>
+        </div>
+        <div style="flex:1;"></div>
+        <div class="metric-desc" style="max-width: 220px;">Authority compounding from integrated content and positioning infrastructure over 6 months.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BLOG / INTELLIGENCE ─── -->
+<section id="blog">
+  <div class="grid-bg"></div>
+  <div class="container">
+    <div class="blog-header fade-in">
+      <div>
+        <div class="section-label">Growth Intelligence</div>
+        <h2 class="blog-headline">Strategic<br>Intelligence Feed.</h2>
+      </div>
+      <a href="#blog" class="btn btn-secondary" style="font-size: 13px; padding: 10px 20px;">View All Articles →</a>
+    </div>
+
+    <div class="blog-grid fade-in">
+      <!-- Featured Post -->
+      <div class="blog-card blog-card-featured">
+        <div class="blog-card-visual">
+          <span class="blog-card-cat">AI Visibility</span>
+          <!-- Analytical visual -->
+          <svg width="280" height="200" viewBox="0 0 280 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.5;">
+            <rect x="20" y="130" width="20" height="50" fill="#e8621a" rx="2" opacity="0.6"/>
+            <rect x="50" y="100" width="20" height="80" fill="#e8621a" rx="2" opacity="0.7"/>
+            <rect x="80" y="80" width="20" height="100" fill="#e8621a" rx="2" opacity="0.8"/>
+            <rect x="110" y="60" width="20" height="120" fill="#e8621a" rx="2" opacity="0.9"/>
+            <rect x="140" y="40" width="20" height="140" fill="#e8621a" rx="2"/>
+            <rect x="170" y="20" width="20" height="160" fill="#f09540" rx="2"/>
+            <polyline points="30,130 60,100 90,80 120,60 150,40 180,20" stroke="#fff" stroke-width="1.5" fill="none" stroke-dasharray="4 4" opacity="0.4"/>
+            <text x="200" y="40" font-size="11" fill="#e8621a" font-weight="700" opacity="0.8">+347%</text>
+          </svg>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-date">May 2025 · 8 min read</div>
+          <div class="blog-card-title">Why AI Search Is the New SEO — And How to Build Visibility Before Your Competitors Do</div>
+          <div class="blog-card-excerpt">The discovery surface has fundamentally shifted. Businesses that understand GEO and conversational AI indexing today will own the demand of tomorrow. Here's the full intelligence architecture breakdown.</div>
+          <div class="blog-card-footer">
+            <span class="blog-card-read">Featured</span>
+            <div class="blog-card-arrow">↗</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post 2 -->
+      <div class="blog-card">
+        <div class="blog-card-visual">
+          <span class="blog-card-cat">Growth Systems</span>
+          <svg width="180" height="150" viewBox="0 0 180 150" fill="none" style="opacity:0.5;">
+            <path d="M20 140 L20 100 L50 100 L50 60 L80 60 L80 20 L110 20 L110 60 L140 60 L140 100 L160 100 L160 140" stroke="#e8621a" stroke-width="1.5" fill="none"/>
+            <circle cx="20" cy="100" r="4" fill="#e8621a"/>
+            <circle cx="50" cy="60" r="4" fill="#e8621a"/>
+            <circle cx="80" cy="20" r="4" fill="#e8621a"/>
+            <circle cx="110" cy="60" r="4" fill="#e8621a"/>
+            <circle cx="140" cy="100" r="4" fill="#e8621a"/>
+          </svg>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-date">Apr 2025 · 6 min read</div>
+          <div class="blog-card-title">The Fragmented Growth Problem: Why Isolated Campaigns Always Underperform</div>
+          <div class="blog-card-excerpt">Fragmented marketing stacks create compounding inefficiencies. Here's the operational case for unified growth infrastructure.</div>
+          <div class="blog-card-footer">
+            <span class="blog-card-read">6 min</span>
+            <div class="blog-card-arrow">↗</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post 3 -->
+      <div class="blog-card">
+        <div class="blog-card-visual">
+          <span class="blog-card-cat">Conversion</span>
+          <!-- Funnel visual -->
+          <svg width="120" height="140" viewBox="0 0 120 140" fill="none" style="opacity:0.5;">
+            <path d="M5 10 L115 10 L85 50 L35 50 Z" stroke="#e8621a" stroke-width="1.5" fill="rgba(232,98,26,0.1)"/>
+            <path d="M35 58 L85 58 L73 98 L47 98 Z" stroke="#e8621a" stroke-width="1.5" fill="rgba(232,98,26,0.15)"/>
+            <path d="M47 106 L73 106 L67 130 L53 130 Z" stroke="#e8621a" stroke-width="1.5" fill="rgba(232,98,26,0.2)"/>
+            <text x="35" y="35" font-size="9" fill="#e8621a" opacity="0.8">ATTRACT</text>
+            <text x="43" y="82" font-size="9" fill="#e8621a" opacity="0.8">CONVERT</text>
+            <text x="47" y="120" font-size="8" fill="#f09540" opacity="0.9">RETAIN</text>
+          </svg>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-date">Mar 2025 · 5 min read</div>
+          <div class="blog-card-title">Conversion Infrastructure: Building Systems That Sell While You Sleep</div>
+          <div class="blog-card-excerpt">CRO isn't a tactic — it's a system. Here's how to architect conversion infrastructure that compounds over time.</div>
+          <div class="blog-card-footer">
+            <span class="blog-card-read">5 min</span>
+            <div class="blog-card-arrow">↗</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BOOKING / CALENDLY ─── -->
+<section id="booking">
+  <div class="grid-bg"></div>
+  <div class="container">
+    <div class="booking-inner">
+      <div class="fade-in">
+        <div class="section-label">Strategic Discussion</div>
+        <h2 class="booking-headline">Schedule Your<br><em>Strategy Call.</em></h2>
+        <p class="booking-sub">Book a focused strategy session. We'll map your current growth infrastructure, identify critical gaps, and outline an integrated growth system tailored to your business — wherever you are in the world.</p>
+
+        <ul class="booking-features">
+          <li>45-minute strategic assessment</li>
+          <li>Growth infrastructure audit</li>
+          <li>Custom roadmap overview</li>
+          <li>No obligation — pure intelligence</li>
+          <li>International time zones supported automatically</li>
+        </ul>
+
+        <div class="booking-contact-cards">
+          <a href="https://wa.me/917208699536" class="contact-card" target="_blank">
+            <div class="contact-card-icon wa">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </div>
+            <div>
+              <div class="contact-card-text">WhatsApp Direct</div>
+              <div class="contact-card-sub">+91 72086 99536 — instant response</div>
+            </div>
+          </a>
+          <a href="mailto:dmii.work@gmail.com" class="contact-card">
+            <div class="contact-card-icon mail">✉️</div>
+            <div>
+              <div class="contact-card-text">Email Strategy Team</div>
+              <div class="contact-card-sub">dmii.work@gmail.com</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Calendly Embed -->
+      <div class="calendly-embed-container fade-in" style="transition-delay: 0.2s;">
+        <!-- Calendly inline widget -->
+        <div class="calendly-inline-widget" data-url="https://calendly.com/dmii-work?hide_gdpr_banner=1&primary_color=e8621a" style="min-width:320px;height:700px;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<section id="cta">
+  <div class="cta-grid-bg"></div>
+  <div class="container">
+    <div class="cta-inner fade-in">
+      <div class="section-label" style="justify-content: center;">Ready to Build</div>
+      <h2 class="cta-headline">Growth Without Systems<br>Eventually <em>Slows.</em></h2>
+      <p class="cta-sub">Build infrastructure designed for modern demand. One integrated growth engine — not a fragmented stack of campaigns.</p>
+      <div class="cta-buttons">
+        <a href="#booking" class="btn btn-primary" style="font-size: 15px; padding: 16px 36px;">Book a Strategy Call →</a>
+        <a href="https://wa.me/917208699536" class="btn btn-whatsapp" style="font-size: 15px; padding: 16px 36px;" target="_blank">WhatsApp Us</a>
+      </div>
+      <div class="cta-email-line">
+        Or email us directly: <a href="mailto:dmii.work@gmail.com">dmii.work@gmail.com</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">DM<span>II</span></div>
+        <div class="footer-tagline">Market Intelligence × Growth Infrastructure × AI Visibility</div>
+
+        <!-- Social Media Links -->
+        <div class="footer-social">
+          <a href="https://www.instagram.com/dmiionline/" class="footer-social-link" target="_blank" rel="noopener" title="Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://www.youtube.com/@DMIIonline" class="footer-social-link" target="_blank" rel="noopener" title="YouTube">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61576338603054" class="footer-social-link" target="_blank" rel="noopener" title="Facebook">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://wa.me/917208699536" class="footer-social-link" target="_blank" rel="noopener" title="WhatsApp">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-title">System</div>
+        <ul class="footer-links">
+          <li><a href="#system">Growth System</a></li>
+          <li><a href="#execution">Execution Model</a></li>
+          <li><a href="#results">Results</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Intelligence</div>
+        <ul class="footer-links">
+          <li><a href="#ai-visibility">AI Visibility</a></li>
+          <li><a href="#philosophy">Philosophy</a></li>
+          <li><a href="#blog">Blog</a></li>
+          <li><a href="#industries">Industries</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Connect</div>
+        <ul class="footer-links">
+          <li><a href="#booking">Book a Strategy Call</a></li>
+          <li><a href="https://wa.me/917208699536" target="_blank">WhatsApp: +91 72086 99536</a></li>
+          <li><a href="mailto:dmii.work@gmail.com">dmii.work@gmail.com</a></li>
+          <li><a href="https://www.instagram.com/dmiionline/" target="_blank">Instagram</a></li>
+          <li><a href="https://www.youtube.com/@DMIIonline" target="_blank">YouTube</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 DMII. Growth Infrastructure for High-Value Businesses Worldwide.</div>
+      <div class="footer-global">
+        <div class="footer-global-dot"></div>
+        Global Operations · All Time Zones Served
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ─── THEME TOGGLE ───
+  const themeToggle = document.getElementById('themeToggle');
+  const html = document.documentElement;
+
+  const savedTheme = localStorage.getItem('dmii-theme') || 'dark';
+  html.setAttribute('data-theme', savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const current = html.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('dmii-theme', next);
+  });
+
+  // ─── CURSOR GLOW ───
+  const glow = document.getElementById('cursorGlow');
+  document.addEventListener('mousemove', e => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+  });
+
+  // ─── NAV SCROLL ───
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ─── MOBILE MENU ───
+  const mobileBtn = document.getElementById('mobileMenuBtn');
+  const navLinks = document.querySelector('.nav-links');
+  mobileBtn.addEventListener('click', () => {
+    const isOpen = navLinks.style.display === 'flex';
+    navLinks.style.display = isOpen ? 'none' : 'flex';
+    navLinks.style.flexDirection = 'column';
+    navLinks.style.position = 'absolute';
+    navLinks.style.top = '100%';
+    navLinks.style.left = '0';
+    navLinks.style.right = '0';
+    navLinks.style.background = 'var(--bg-primary)';
+    navLinks.style.padding = '20px 24px';
+    navLinks.style.borderBottom = '1px solid var(--border)';
+    navLinks.style.gap = '16px';
+    if (isOpen) navLinks.style.display = 'none';
+  });
+
+  // ─── FADE IN ON SCROLL ───
+  const fadeEls = document.querySelectorAll('.fade-in');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  fadeEls.forEach(el => observer.observe(el));
+
+  // ─── ACTIVITY BARS ───
+  const actBar = document.getElementById('actBar');
+  if (actBar) {
+    const vals = [40, 55, 35, 70, 60, 80, 45, 90, 75, 85, 60, 95, 70, 88, 65, 92, 78, 86, 72, 94, 68, 88, 82, 91, 76, 95, 84, 97, 80, 99];
+    vals.forEach((v, i) => {
+      const bar = document.createElement('div');
+      bar.className = 'activity-bar-item';
+      bar.style.height = v + '%';
+      bar.style.animationDelay = (i * 0.04) + 's';
+      bar.style.opacity = 0.4 + (v / 100 * 0.6);
+      actBar.appendChild(bar);
+    });
+  }
+
+  // ─── PILLAR CARDS HOVER ───
+  const pillarCards = document.querySelectorAll('.pillar-card');
+  pillarCards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      pillarCards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+    });
+  });
+
+  // ─── FRAGMENT NODES SVG LINES ───
+  function drawFragLines() {
+    const svg = document.getElementById('fragSvg');
+    if (!svg) return;
+    const container = svg.closest('.problem-visual');
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    svg.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
+    svg.innerHTML = '';
+
+    const nodeIds = ['fn1','fn2','fn4','fn5','fn6','fn7'];
+    const center = document.getElementById('fn3');
+    if (!center) return;
+    const cRect = center.getBoundingClientRect();
+    const cx = cRect.left - rect.left + cRect.width / 2;
+    const cy = cRect.top - rect.top + cRect.height / 2;
+
+    nodeIds.forEach(id => {
+      const node = document.getElementById(id);
+      if (!node) return;
+      const nRect = node.getBoundingClientRect();
+      const nx = nRect.left - rect.left + nRect.width / 2;
+      const ny = nRect.top - rect.top + nRect.height / 2;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', cx); line.setAttribute('y1', cy);
+      line.setAttribute('x2', nx); line.setAttribute('y2', ny);
+      line.setAttribute('stroke', 'rgba(232,98,26,0.2)');
+      line.setAttribute('stroke-width', '1');
+      line.setAttribute('stroke-dasharray', '4 4');
+      svg.appendChild(line);
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('r', '2.5');
+      circle.setAttribute('fill', '#e8621a');
+      circle.setAttribute('opacity', '0.6');
+      const anim = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
+      anim.setAttribute('dur', (2 + Math.random() * 2) + 's');
+      anim.setAttribute('repeatCount', 'indefinite');
+      anim.setAttribute('path', `M${cx},${cy} L${nx},${ny}`);
+      circle.appendChild(anim);
+      svg.appendChild(circle);
+    });
+  }
+
+  setTimeout(drawFragLines, 600);
+  window.addEventListener('resize', drawFragLines);
+
+  // ─── SMOOTH SCROLL ───
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // ─── INITIAL FADE IN FOR HERO ───
+  document.querySelectorAll('#hero .fade-in').forEach(el => {
+    setTimeout(() => el.classList.add('visible'), 300);
+  });
+
+  // ─── CALENDLY INIT ───
+  // Calendly widget initializes automatically via the data-url attribute
+  // The widget supports international time zones natively
+
+</script>
+</body>
+</html>
